@@ -8,7 +8,3 @@ export interface Task {
   priority?: string
   status: TaskStatus
 }
-export interface Column{
-  id:TaskStatus
-  titlte:string
-}

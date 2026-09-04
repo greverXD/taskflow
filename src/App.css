@@ -198,3 +198,8 @@
 .task-title_done {
   color: green;
 }
+.Board_list {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}

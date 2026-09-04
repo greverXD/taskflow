@@ -5,9 +5,14 @@ import { useState } from 'react';
 import './App.css';
 interface Column{
   id:TaskStatus
-  titlte:string
+  title:string
 }
-
+const COLUMNS: Column[] = [
+  { id: 'todo', title: 'To Do' },
+  { id: 'in-progress', title: 'In Progress' },
+  { id: 'review', title: 'Review' },
+  { id: 'done', title: 'Done' },
+]
 const initialTasks: Task[] = [
   { id: 1, title: 'Task 1', description: '...', dueDate: '2023-06-01', priority: 'High', status: 'todo' },
   { id: 2, title: 'Task 2', description: '...', dueDate: '2023-06-02', status: 'todo' },
@@ -76,14 +81,23 @@ const doneCount = tasks.filter((task)=> task.status === 'done').length
       <h1>TaskFlow</h1>
       <div className="Board_list">
         <div>Выполнено {doneCount} из {tasks.length}</div>
-        {tasks.map((task) => (
-          <TaskCard
+        {
+          COLUMNS.map((column)=>(
+            <div key={column.id} >
+            <div>{column.title}
+            </div>
+            {tasks.filter((task)=> task.status === column.id)
+            .map((task)=>(
+            <TaskCard
             key={task.id}
             tasks={task}
             onDelete={handleDelete}
             handleMoveStatus = {handleMoveStatus}
           />
-        ))}
+            ))}
+            </div>
+          ))
+        }
       </div>
       <button onClick={() => handleSetAllDone(true)}>Отметить все как выполненные</button>
       <button onClick={() => handleSetAllDone(false)}>Снять все отметки</button>
