@@ -1,14 +1,23 @@
 import TaskCard from './components/TaskCard';
 import type { Task } from "./types"
+import type { TaskStatus } from './types';
 import { useState } from 'react';
 import './App.css';
-
+interface Column{
+  id:TaskStatus
+  titlte:string
+}
 
 const initialTasks: Task[] = [
-  { id: 1, title: 'Task 1', description: '...', dueDate: '2023-06-01', priority: 'High', done: false },
-  { id: 2, title: 'Task 2', description: '...', dueDate: '2023-06-02', done: false },
-  { id: 3, title: 'Task 3', description: '...', dueDate: '2023-06-03', done: false },
+  { id: 1, title: 'Task 1', description: '...', dueDate: '2023-06-01', priority: 'High', status: 'todo' },
+  { id: 2, title: 'Task 2', description: '...', dueDate: '2023-06-02', status: 'todo' },
+  { id: 3, title: 'Task 3', description: '...', dueDate: '2023-06-03', status: 'todo' },
 ]
+
+
+const STATUS_ORDER: TaskStatus[] = ["todo", "in-progress", "review", "done"]
+
+
 
 
 function App() {
@@ -16,11 +25,7 @@ function App() {
   function handleDelete(id: number) {
   setTasks((prev)=>prev.filter(task=> task.id !== id))
 }
-function handleToggleDone(id:number){
-  setTasks((prev)=> 
-  prev.map((task)=> 
-    task.id === id ? {...task, done: !task.done} : task))
-}
+
 function handleAddTask(){
   setTasks((prev)=>{
     const newId = Math.max(...prev.map((task)=>task.id)) + 1
@@ -29,7 +34,7 @@ function handleAddTask(){
       title: 'Новая задача',
       description: 'Описание задачи',
       dueDate: '2026-09-03',
-      done: false,
+      status: 'todo',
     }
     return [...prev,newTask]
   })
@@ -37,14 +42,35 @@ function handleAddTask(){
 
 }
 
+function handleMoveStatus(id:number, direction: 1 | -1){
+  setTasks((prev)=>{
+    return prev.map((task)=>{
+      if(task.id !== id){
+        return task
+      }
+      const currentIndex = STATUS_ORDER.indexOf(task.status) 
+      const newIndex = currentIndex + direction
+      if(newIndex < 0 || newIndex >= STATUS_ORDER.length){
+        return task
+      } else{
+       
+        const statustask = STATUS_ORDER[newIndex]
+        return {...task, status:statustask}
+      }
+    })
+    
+  })
+}
+
+
 function handleSetAllDone(done:boolean){
-  setTasks((prev)=>prev.map((task)=>({...task,done})))
+  setTasks((prev)=>prev.map((task)=>({...task,status:'done'})))
 }
 
 function handleClearCompleted(){
-  setTasks((prev)=> prev.filter((task)=> task.done !== true))
+  setTasks((prev)=> prev.filter((task)=> task.status === 'todo'))
 }
-const doneCount = tasks.filter((task)=> task.done === true).length
+const doneCount = tasks.filter((task)=> task.status === 'done').length
   return(
     <div className="board">
       <h1>TaskFlow</h1>
@@ -55,7 +81,7 @@ const doneCount = tasks.filter((task)=> task.done === true).length
             key={task.id}
             tasks={task}
             onDelete={handleDelete}
-            onToggleDone={handleToggleDone}
+            handleMoveStatus = {handleMoveStatus}
           />
         ))}
       </div>

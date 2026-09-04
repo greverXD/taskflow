@@ -1,8 +1,14 @@
+export type TaskStatus = 'todo' | 'in-progress' | 'review' | 'done'
+
 export interface Task {
   id: number
   title: string
   description: string
   dueDate: string
   priority?: string
-  done: boolean
+  status: TaskStatus
+}
+export interface Column{
+  id:TaskStatus
+  titlte:string
 }

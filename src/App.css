@@ -183,6 +183,18 @@
   }
 }
 
-.task-title_done{
-  color:green
+.task-title_todo {
+  color: #6b7280;
+}
+
+.task-title_in-progress {
+  color: #2563eb;
+}
+
+.task-title_review {
+  color: #d97706;
+}
+
+.task-title_done {
+  color: green;
 }
