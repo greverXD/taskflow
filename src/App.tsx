@@ -3,6 +3,7 @@ import type { Task } from "./types"
 import type { TaskStatus } from './types';
 import { useState } from 'react';
 import './App.css';
+import TaskForm from './components/TaskForm';
 interface Column{
   id:TaskStatus
   title:string
@@ -68,22 +69,23 @@ function handleMoveStatus(id:number, direction: 1 | -1){
 }
 
 
-function handleSetAllDone(done:boolean){
-  setTasks((prev)=>prev.map((task)=>({...task,status:'done'})))
+function handleSetAllStatus(status: TaskStatus){
+  setTasks((prev)=>prev.map((task)=>({...task,status})))
 }
 
 function handleClearCompleted(){
-  setTasks((prev)=> prev.filter((task)=> task.status === 'todo'))
+  setTasks((prev)=> prev.filter((task)=> task.status !== 'done'))
 }
 const doneCount = tasks.filter((task)=> task.status === 'done').length
   return(
     <div className="board">
       <h1>TaskFlow</h1>
+      <TaskForm/>
       <div className="Board_list">
         <div>Выполнено {doneCount} из {tasks.length}</div>
         {
           COLUMNS.map((column)=>(
-            <div key={column.id} >
+            <div key={column.id} className="column">
             <div>{column.title}
             </div>
             {tasks.filter((task)=> task.status === column.id)
@@ -99,8 +101,8 @@ const doneCount = tasks.filter((task)=> task.status === 'done').length
           ))
         }
       </div>
-      <button onClick={() => handleSetAllDone(true)}>Отметить все как выполненные</button>
-      <button onClick={() => handleSetAllDone(false)}>Снять все отметки</button>
+      <button onClick={() => handleSetAllStatus('done')}>Отметить все как выполненные</button>
+      <button onClick={() => handleSetAllStatus('todo')}>Снять все отметки</button>
       <button onClick={handleAddTask}>Добавить задачу</button>
       <button onClick={handleClearCompleted}>Очистить выполненные</button>
     </div>
