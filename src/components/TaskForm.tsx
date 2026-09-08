@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import type { TaskPriority } from '../types' 
-interface TaskFormValues{
+export interface TaskFormValues{
     title:string
     description:string
     dueDate:string
@@ -12,7 +12,10 @@ const initialForm: TaskFormValues = {
     dueDate:'',
     priority:'Medium'
 }
-function TaskForm(){
+interface TaskProps{
+    onAddTask:(form: TaskFormValues)=> void
+}
+function TaskForm({onAddTask}:TaskProps){
     const [form,setForm] = useState<TaskFormValues>(initialForm)
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>){
@@ -21,7 +24,12 @@ function TaskForm(){
     }
     function handleSubmit(e: React.FormEvent<HTMLFormElement>){
         e.preventDefault()
-        console.log(form)
+        onAddTask(form)
+        setForm(initialForm)
+    }
+
+    function handleClearForm(){
+        setForm(initialForm)
     }
     return (
         <form onSubmit={handleSubmit}>
@@ -29,7 +37,7 @@ function TaskForm(){
             onChange={handleChange}
             />
             <textarea name='description' value={form.description} onChange={handleChange}></textarea>
-            <input type='date' name='dueDate' value={form.dueDate} onChange={handleChange}></input>
+            <input type='date' name='dueDate' value={form.dueDate} onChange={handleChange} />
             <select name='priority'  value={form.priority} onChange={handleChange}>
                 <option value="Low">Low</option>
                 <option value="Medium">Medium</option>
@@ -37,6 +45,7 @@ function TaskForm(){
             </select>
             {form.title}
             <button type='submit'>Добавить</button>
+            <button type='button' onClick={handleClearForm}>Очистить форму</button>
         </form>
     )
 }
