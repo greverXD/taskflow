@@ -1,10 +1,11 @@
 import TaskCard from './components/TaskCard';
 import type { Task } from "./types"
 import type { TaskStatus } from './types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
 import TaskForm from './components/TaskForm';
 import type { TaskFormValues } from './components/TaskForm';
+const key:string = "keyTask"
 interface Column{
   id:TaskStatus
   title:string
@@ -28,7 +29,22 @@ const STATUS_ORDER: TaskStatus[] = ["todo", "in-progress", "review", "done"]
 
 
 function App() {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [tasks, setTasks] = useState<Task[]>(()=>{
+      try{
+    const parse = tasksKey ? JSON.parse(tasksKey) : initialTasks
+    return parse
+  } catch(error){
+    console.warn("Error",error)
+    return initialTasks
+    
+  }
+  })
+
+  useEffect(()=>{
+    localStorage.setItem(key,JSON.stringify(tasks))
+  },[tasks])
+  const tasksKey= localStorage.getItem(key)
+
   function handleDelete(id: number) {
   setTasks((prev)=>prev.filter(task=> task.id !== id))
 }

@@ -35,9 +35,10 @@ function TaskForm({onAddTask}:TaskProps){
         <form onSubmit={handleSubmit}>
             <input name='title' value={form.title} 
             onChange={handleChange}
+            required
             />
             <textarea name='description' value={form.description} onChange={handleChange}></textarea>
-            <input type='date' name='dueDate' value={form.dueDate} onChange={handleChange} />
+            <input type='date' name='dueDate' value={form.dueDate} onChange={handleChange} required/>
             <select name='priority'  value={form.priority} onChange={handleChange}>
                 <option value="Low">Low</option>
                 <option value="Medium">Medium</option>
