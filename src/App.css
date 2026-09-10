@@ -207,3 +207,16 @@
   border-left: 2px solid black;
   border-right: 2px solid black;
 }
+.board_white{
+  background-color: blanchedalmond;
+}
+.board_black{
+  background-color: none;
+}
+.form_white{
+  background-color: green;
+}
+.form_dark{
+  background-color: gray;
+}
+

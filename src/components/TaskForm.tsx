@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import type { TaskPriority } from '../types' 
+import { useVolume } from '../TaskContext'
 export interface TaskFormValues{
     title:string
     description:string
@@ -31,8 +32,9 @@ function TaskForm({onAddTask}:TaskProps){
     function handleClearForm(){
         setForm(initialForm)
     }
+    const {color} = useVolume()
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className={color? "form_white":"form_dark"}>
             <input name='title' value={form.title} 
             onChange={handleChange}
             required

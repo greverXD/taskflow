@@ -5,7 +5,10 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import TaskForm from './components/TaskForm';
 import type { TaskFormValues } from './components/TaskForm';
+import { useVolume } from './TaskContext';
+
 const key:string = "keyTask"
+
 interface Column{
   id:TaskStatus
   title:string
@@ -31,6 +34,7 @@ const STATUS_ORDER: TaskStatus[] = ["todo", "in-progress", "review", "done"]
 function App() {
   const [tasks, setTasks] = useState<Task[]>(()=>{
       try{
+    const tasksKey= localStorage.getItem(key)
     const parse = tasksKey ? JSON.parse(tasksKey) : initialTasks
     return parse
   } catch(error){
@@ -43,7 +47,7 @@ function App() {
   useEffect(()=>{
     localStorage.setItem(key,JSON.stringify(tasks))
   },[tasks])
-  const tasksKey= localStorage.getItem(key)
+  
 
   function handleDelete(id: number) {
   setTasks((prev)=>prev.filter(task=> task.id !== id))
@@ -86,8 +90,17 @@ function handleClearCompleted(){
   setTasks((prev)=> prev.filter((task)=> task.status !== 'done'))
 }
 const doneCount = tasks.filter((task)=> task.status === 'done').length
+const unDoneCount = tasks.filter((task)=> task.status !== 'done').length
+ 
+useEffect(()=>{
+  document.title = `Невыполнено ${unDoneCount}`
+},[unDoneCount])
+
+const {toggleDark} = useVolume()
+const {color} = useVolume()
+
   return(
-    <div className="board">
+    <div className={color ? 'board_white' : 'board_dark'}>
       <h1>TaskFlow</h1>
       <TaskForm onAddTask={handleCreateTask}/>
       <div className="Board_list">
@@ -113,6 +126,7 @@ const doneCount = tasks.filter((task)=> task.status === 'done').length
       <button onClick={() => handleSetAllStatus('done')}>Отметить все как выполненные</button>
       <button onClick={() => handleSetAllStatus('todo')}>Снять все отметки</button>
       <button onClick={handleClearCompleted}>Очистить выполненные</button>
+      <button onClick={toggleDark}>Переключить тему</button>
     </div>
   )
 }
