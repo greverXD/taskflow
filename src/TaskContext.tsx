@@ -1,4 +1,4 @@
-import { useContext,useState, createContext,useEffect, type ReactNode } from "react";
+import { useContext, useState, createContext,useEffect, type ReactNode } from "react";
 interface ToggleThemeValue{
     color: boolean
     toggleDark: ()=> void
@@ -9,21 +9,25 @@ function ThemeProvider({children}: {children:ReactNode}){
 
     
 
-    // const [color,useClor] = useState(()=>{
-    //     try{
-    //         let taskKey = localStorage.getItem(key)
-    //         if(taskKey === null){
-    //             taskKey = false
-    //             const parse = taskKey ? JSON.parse(taskKey) : color
-    //             return parse
-    //         }
-    //     }catch{
-    //             throw new Error("Ошибка")
-    //         }
-    // }) 
+    const [color,useColor] = useState<boolean>(()=>{
+        try{
+            let taskKey = localStorage.getItem(key)
+            if(taskKey === null){
+                return false
+            } 
+            return JSON.parse(taskKey)
+            }
+
+            
+        
+        catch(error){
+            console.warn("error",error)
+            return false
+            }
+    }) 
 
 
-    const toggleDark = () => useClor((prev)=>!prev)
+    const toggleDark = () => useColor((prev)=>!prev)
     useEffect(()=>{
   localStorage.setItem(key,JSON.stringify(color))
 },[color])

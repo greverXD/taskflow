@@ -8,3 +8,7 @@ export interface Task {
   priority?: TaskPriority
   status: TaskStatus
 }
+export interface Column{
+  id: TaskStatus
+  title: string
+}

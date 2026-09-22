@@ -208,15 +208,20 @@
   border-right: 2px solid black;
 }
 .board_white{
-  background-color: blanchedalmond;
+  background-color: white;
 }
 .board_black{
-  background-color: none;
+  background-color: black;
 }
 .form_white{
-  background-color: green;
+  background-color: white;
 }
 .form_dark{
   background-color: gray;
 }
-
+.h_white{
+  color: black;
+}
+.h_dark{
+  color:white
+}

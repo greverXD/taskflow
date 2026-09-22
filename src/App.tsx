@@ -6,13 +6,13 @@ import './App.css';
 import TaskForm from './components/TaskForm';
 import type { TaskFormValues } from './components/TaskForm';
 import { useVolume } from './TaskContext';
+import { DndContext } from '@dnd-kit/core';
+import type { Column } from './types';
+import Columnpcomponent from './components/Column';
 
 const key:string = "keyTask"
 
-interface Column{
-  id:TaskStatus
-  title:string
-}
+
 const COLUMNS: Column[] = [
   { id: 'todo', title: 'To Do' },
   { id: 'in-progress', title: 'In Progress' },
@@ -101,28 +101,27 @@ const {color} = useVolume()
 
   return(
     <div className={color ? 'board_white' : 'board_dark'}>
-      <h1>TaskFlow</h1>
+      <h1 className={color ? 'h_white' : 'h_dark'}>TaskFlow</h1>
       <TaskForm onAddTask={handleCreateTask}/>
+      <DndContext onDragEnd={()=>{}}>
       <div className="Board_list">
         <div>Выполнено {doneCount} из {tasks.length}</div>
-        {
-          COLUMNS.map((column)=>(
-            <div key={column.id} className="column">
-            <div>{column.title}
-            </div>
-            {tasks.filter((task)=> task.status === column.id)
-            .map((task)=>(
-            <TaskCard
-            key={task.id}
+      {COLUMNS.map((column) => (
+        <Columnpcomponent key={column.id} column={column}>
+           {tasks
+            .filter((task) => task.status === column.id)
+              .map((task) => (
+             <TaskCard
+             key={task.id}
             tasks={task}
             onDelete={handleDelete}
-            handleMoveStatus = {handleMoveStatus}
-          />
-            ))}
-            </div>
-          ))
-        }
+            handleMoveStatus={handleMoveStatus}
+        />
+      ))}
+  </Columnpcomponent>
+))}
       </div>
+    </DndContext>
       <button onClick={() => handleSetAllStatus('done')}>Отметить все как выполненные</button>
       <button onClick={() => handleSetAllStatus('todo')}>Снять все отметки</button>
       <button onClick={handleClearCompleted}>Очистить выполненные</button>

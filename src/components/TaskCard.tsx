@@ -1,6 +1,8 @@
 import type { Task } from '../types';
 import type { TaskStatus } from '../types';
 import '../App.css'
+import { useDraggable } from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
 interface TaskCardProps {
     tasks: Task,
     onDelete: (id: number) => void
@@ -15,8 +17,12 @@ const STATUS_CLASS : Record<TaskStatus,string> ={
 }
 
 function TaskCard({ tasks, onDelete , handleMoveStatus }: TaskCardProps) {
+    const {attributes ,listeners,setNodeRef,transform}= useDraggable({id:tasks.id})
+    const style ={
+        transform: CSS.Translate.toString(transform)
+    }
     return(
-        <div className="task-card">
+        <div className="task-card" style={style} ref={setNodeRef} {...listeners} {...attributes}>
             <h3 className={STATUS_CLASS[tasks.status]}>{tasks.title}</h3>
             <p>{tasks.description}</p>
             <span className="task-card_date">{tasks.dueDate}</span>
