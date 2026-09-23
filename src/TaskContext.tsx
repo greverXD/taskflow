@@ -9,9 +9,9 @@ function ThemeProvider({children}: {children:ReactNode}){
 
     
 
-    const [color,useColor] = useState<boolean>(()=>{
+    const [color,setColor] = useState<boolean>(()=>{
         try{
-            let taskKey = localStorage.getItem(key)
+            const taskKey = localStorage.getItem(key)
             if(taskKey === null){
                 return false
             } 
@@ -27,7 +27,7 @@ function ThemeProvider({children}: {children:ReactNode}){
     }) 
 
 
-    const toggleDark = () => useColor((prev)=>!prev)
+    const toggleDark = () => setColor((prev)=>!prev)
     useEffect(()=>{
   localStorage.setItem(key,JSON.stringify(color))
 },[color])

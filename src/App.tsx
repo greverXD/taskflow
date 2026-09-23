@@ -6,13 +6,19 @@ import './App.css';
 import TaskForm from './components/TaskForm';
 import type { TaskFormValues } from './components/TaskForm';
 import { useVolume } from './TaskContext';
-import { DndContext } from '@dnd-kit/core';
 import type { Column } from './types';
 import Columnpcomponent from './components/Column';
+import { DndContext,PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import type { DragEndEvent } from '@dnd-kit/core';
+import { AnimatePresence,motion,stagger,type Variants } from 'motion/react';
 
 const key:string = "keyTask"
 
+const appVariant : Variants ={
+    hidden:{},
+    visible:{transition:{delayChildren:stagger(0.15)}},
 
+}
 const COLUMNS: Column[] = [
   { id: 'todo', title: 'To Do' },
   { id: 'in-progress', title: 'In Progress' },
@@ -32,6 +38,23 @@ const STATUS_ORDER: TaskStatus[] = ["todo", "in-progress", "review", "done"]
 
 
 function App() {
+  function handleDragEnd(event:DragEndEvent){
+    const {active, over} = event
+    if(!over) return
+
+    const taskId = active.id as number
+    const newStatus = over.id as TaskStatus
+    
+    setTasks((prev)=>
+      prev.map((task)=>(task.id === taskId ? {...task, status : newStatus} : task))
+    )
+    
+  }
+  const sensor = useSensors(useSensor(PointerSensor,{
+    activationConstraint:{
+      distance: 8
+    },
+  }))
   const [tasks, setTasks] = useState<Task[]>(()=>{
       try{
     const tasksKey= localStorage.getItem(key)
@@ -76,7 +99,7 @@ function handleMoveStatus(id:number, direction: 1 | -1){
 
 function handleCreateTask(taskCreate: TaskFormValues){
   setTasks((prev)=>{
-    const newId = Math.max(...prev.map((task)=> task.id))+1
+    const newId =  prev.length > 0 ? Math.max(...prev.map((task)=> task.id))+1 : 1 
     const newTask: Task = {...taskCreate, id:newId, status:'todo'}
     return[...prev,newTask]
   })
@@ -96,18 +119,21 @@ useEffect(()=>{
   document.title = `Невыполнено ${unDoneCount}`
 },[unDoneCount])
 
-const {toggleDark} = useVolume()
-const {color} = useVolume()
+const {toggleDark,color} = useVolume()
+
 
   return(
     <div className={color ? 'board_white' : 'board_dark'}>
       <h1 className={color ? 'h_white' : 'h_dark'}>TaskFlow</h1>
       <TaskForm onAddTask={handleCreateTask}/>
-      <DndContext onDragEnd={()=>{}}>
-      <div className="Board_list">
+      <DndContext sensors={sensor} onDragEnd={handleDragEnd}>
+      <motion.div className="Board_list" variants={appVariant} animate="visible" initial="hidden">
         <div>Выполнено {doneCount} из {tasks.length}</div>
       {COLUMNS.map((column) => (
         <Columnpcomponent key={column.id} column={column}>
+        <AnimatePresence 
+        initial={false}
+        >
            {tasks
             .filter((task) => task.status === column.id)
               .map((task) => (
@@ -116,11 +142,12 @@ const {color} = useVolume()
             tasks={task}
             onDelete={handleDelete}
             handleMoveStatus={handleMoveStatus}
+            
         />
-      ))}
+      ))}</AnimatePresence>
   </Columnpcomponent>
 ))}
-      </div>
+      </motion.div>
     </DndContext>
       <button onClick={() => handleSetAllStatus('done')}>Отметить все как выполненные</button>
       <button onClick={() => handleSetAllStatus('todo')}>Снять все отметки</button>

@@ -202,6 +202,7 @@
   display: flex;
   gap: 16px;
   align-items: flex-start;
+  height: 400px;
 }
 .column{
   border-left: 2px solid black;
@@ -210,7 +211,7 @@
 .board_white{
   background-color: white;
 }
-.board_black{
+.board_dark{
   background-color: black;
 }
 .form_white{
@@ -224,4 +225,26 @@
 }
 .h_dark{
   color:white
+}
+.title_yellow{
+  border: 2px solid yellow;
+}
+.title_none{
+  border: none
+  
+}
+.column{
+  height: 200px;
+  width: 200px;
+}
+
+.task-card{
+  cursor: grab;
+  transition:box-shadow 0.2s;
+}
+.task-card_dragging{
+  outline: 2px solid red;
+  cursor: grabbing;
+  box-shadow: 10px 5px 5px black;
+  
 }
