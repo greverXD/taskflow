@@ -11,6 +11,7 @@ import Columnpcomponent from './components/Column';
 import { DndContext,PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { DragEndEvent } from '@dnd-kit/core';
 import { AnimatePresence,motion,stagger,type Variants } from 'motion/react';
+import ConfirmModal  from './ConfirmModal'
 
 const key:string = "keyTask"
 
@@ -38,6 +39,19 @@ const STATUS_ORDER: TaskStatus[] = ["todo", "in-progress", "review", "done"]
 
 
 function App() {
+  const [taskToDelete,setTaskToDelete] = useState<Task|undefined>(undefined)
+  function openModalDelete(id:number){
+    setTaskToDelete(tasks.find((task)=> task.id === id))
+  }
+  function confirmModal(id: number){
+    handleDelete(id)
+    setTaskToDelete(undefined)
+
+  }
+  function cancelModal(){
+    setTaskToDelete(undefined)
+  }
+
   function handleDragEnd(event:DragEndEvent){
     const {active, over} = event
     if(!over) return
@@ -140,7 +154,7 @@ const {toggleDark,color} = useVolume()
              <TaskCard
              key={task.id}
             tasks={task}
-            onDelete={handleDelete}
+            onDelete={openModalDelete}
             handleMoveStatus={handleMoveStatus}
             
         />
@@ -153,7 +167,19 @@ const {toggleDark,color} = useVolume()
       <button onClick={() => handleSetAllStatus('todo')}>Снять все отметки</button>
       <button onClick={handleClearCompleted}>Очистить выполненные</button>
       <button onClick={toggleDark}>Переключить тему</button>
+      
+      <AnimatePresence>
+      {taskToDelete && <ConfirmModal
+      key={taskToDelete.id}
+      task={taskToDelete}
+      onDelete={confirmModal}
+      onCancel={cancelModal}
+      />}
+      </AnimatePresence>
+      
     </div>
+
+    
   )
 }
 

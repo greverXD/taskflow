@@ -1,11 +1,29 @@
+import type { Task } from "./types"
+import { motion, type Variants } from "motion/react"
+interface modalTask{
+    task: Task
+    onDelete: (id:number) => void
+    onCancel: () => void
+}
+const modalVarants: Variants = {
+      hidden: {opacity: 0},
+      visible: {opacity: 1},
+      exit:{opacity:0}
 
-function ConfirmModal(){
+} 
+const modalWindow: Variants = {
+
+      exit:{opacity:0 , y:-20}
+}
+function ConfirmModal({task,onDelete,onCancel}: modalTask){
     return(
-        <div>
-            удалить задачу 
-            <button></button>
-            <button></button>
-        </div>
+        <motion.div className="modal-overlay" variants={modalVarants} initial="hidden" animate="visible" exit = "exit" onClick={onCancel}>
+            <motion.div className="modal-window" variants={modalWindow} initial="hidden" animate="visible" onClick={(e)=> e.stopPropagation()}>
+            Удалить задачу {task.description} ?
+            <button onClick={()=> onDelete(task.id)} type="button">Удалить</button>
+            <button onClick={()=> onCancel()} type="button">отмена</button>
+            </motion.div>
+        </motion.div>
     )
 }
 export default ConfirmModal
