@@ -12,8 +12,10 @@ import { DndContext,PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { DragEndEvent } from '@dnd-kit/core';
 import { AnimatePresence,motion,stagger,type Variants } from 'motion/react';
 import ConfirmModal  from './ConfirmModal'
+import { useLocalStorage } from './hooks/useLocalStorage';
+import type { TaskPriority, SortBy } from './types';
+import { useTasksFilters } from './hooks/useTasksFilters';
 
-const key:string = "keyTask"
 
 const appVariant : Variants ={
     hidden:{},
@@ -39,7 +41,11 @@ const STATUS_ORDER: TaskStatus[] = ["todo", "in-progress", "review", "done"]
 
 
 function App() {
+
   const [taskToDelete,setTaskToDelete] = useState<Task|undefined>(undefined)
+  const [tasks,setTasks]= useLocalStorage('keyTask', initialTasks)
+  const {priorityFilter,setPriorityFilter,sortBy,setSortBy,search,setSearch,sortTask} = useTasksFilters(tasks)
+
   function openModalDelete(id:number){
     setTaskToDelete(tasks.find((task)=> task.id === id))
   }
@@ -69,21 +75,7 @@ function App() {
       distance: 8
     },
   }))
-  const [tasks, setTasks] = useState<Task[]>(()=>{
-      try{
-    const tasksKey= localStorage.getItem(key)
-    const parse = tasksKey ? JSON.parse(tasksKey) : initialTasks
-    return parse
-  } catch(error){
-    console.warn("Error",error)
-    return initialTasks
-    
-  }
-  })
-
-  useEffect(()=>{
-    localStorage.setItem(key,JSON.stringify(tasks))
-  },[tasks])
+  
   
 
   function handleDelete(id: number) {
@@ -140,6 +132,18 @@ const {toggleDark,color} = useVolume()
     <div className={color ? 'board_white' : 'board_dark'}>
       <h1 className={color ? 'h_white' : 'h_dark'}>TaskFlow</h1>
       <TaskForm onAddTask={handleCreateTask}/>
+      <input value={search} onChange={(e)=> setSearch(e.target.value)}></input>
+          <select value={priorityFilter} onChange={(e)=> setPriorityFilter(e.target.value as TaskPriority | "all")}>
+            <option value="all">All</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+          <select value={sortBy} onChange={(e)=> setSortBy(e.target.value as SortBy)}>
+            <option value="none">ничего</option>
+            <option value="dueDate">Время</option>
+            <option value="priority">Приоритет</option>
+          </select>
       <DndContext sensors={sensor} onDragEnd={handleDragEnd}>
       <motion.div className="Board_list" variants={appVariant} animate="visible" initial="hidden">
         <div>Выполнено {doneCount} из {tasks.length}</div>
@@ -148,7 +152,7 @@ const {toggleDark,color} = useVolume()
         <AnimatePresence 
         initial={false}
         >
-           {tasks
+           {sortTask
             .filter((task) => task.status === column.id)
               .map((task) => (
              <TaskCard

@@ -1,36 +1,15 @@
-import { useContext, useState, createContext,useEffect, type ReactNode } from "react";
+import { useContext, createContext, type ReactNode } from "react";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 interface ToggleThemeValue{
     color: boolean
     toggleDark: ()=> void
 }
 const CreateTask = createContext<ToggleThemeValue| undefined>(undefined)
 function ThemeProvider({children}: {children:ReactNode}){
-    const key:string = "keyColor"
-
-    
-
-    const [color,setColor] = useState<boolean>(()=>{
-        try{
-            const taskKey = localStorage.getItem(key)
-            if(taskKey === null){
-                return false
-            } 
-            return JSON.parse(taskKey)
-            }
-
-            
-        
-        catch(error){
-            console.warn("error",error)
-            return false
-            }
-    }) 
 
 
-    const toggleDark = () => setColor((prev)=>!prev)
-    useEffect(()=>{
-  localStorage.setItem(key,JSON.stringify(color))
-},[color])
+const [color,setColor] = useLocalStorage('keyColor', false)
+const toggleDark = () => setColor((prev)=>!prev)
     return(
      <CreateTask.Provider value={{color,toggleDark}}>
         {children}

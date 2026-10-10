@@ -14,7 +14,7 @@ interface ColumnProps{
 function Columnpcomponent({column,children}:ColumnProps ){
     const {setNodeRef,isOver} = useDroppable({id:column.id})
     return(
-         <motion.div ref={setNodeRef} className="column" variants={columnVariant} animate="visible">
+         <motion.div ref={setNodeRef} className="column" variants={columnVariant}>
             <div className={isOver ? 'title_yellow' : "title_none"}>{column.title}</div>
             {children}
          </motion.div>
