@@ -8,8 +8,13 @@ export interface Task {
   dueDate: string
   priority?: TaskPriority
   status: TaskStatus
+  boardId: number
 }
 export interface Column{
   id: TaskStatus
+  title: string
+}
+export interface Board{
+  id: number
   title: string
 }
