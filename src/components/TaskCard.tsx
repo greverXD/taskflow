@@ -3,6 +3,7 @@ import type { TaskStatus } from '../types';
 import '../App.css'
 import { useDraggable } from '@dnd-kit/core';
 import { motion, type Variants } from 'motion/react';
+import { Link } from 'react-router';
 interface TaskCardProps {
     tasks: Task,
     onDelete: (id: number) => void
@@ -38,7 +39,7 @@ function TaskCard({ tasks, onDelete , handleMoveStatus }: TaskCardProps) {
         layoutId= {String(tasks.id)}
         layout
         >
-            <h3 className={STATUS_CLASS[tasks.status]}>{tasks.title}</h3>
+            <h3 className={STATUS_CLASS[tasks.status]}><Link to={`/boards/${tasks.boardId}/tasks/${tasks.id}`}>{tasks.title}</Link></h3>
             <p>{tasks.description}</p>
             <span className="task-card_date">{tasks.dueDate}</span>
             {tasks.priority && <span className="task-card_priority">{tasks.priority}</span>}

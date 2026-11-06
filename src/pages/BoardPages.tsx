@@ -20,7 +20,7 @@ import type { TaskPriority, SortBy } from "../types";
 import { useTasksFilters } from "../hooks/useTasksFilters";
 import { useKeyPress } from "../hooks/useKeyPress";
 import type { Dispatch,SetStateAction } from "react";
-import { useParams,Link } from "react-router";
+import { useParams,Link, Outlet } from "react-router";
 
 interface BoardPage{
     tasks: Task[]
@@ -123,11 +123,11 @@ function BoardPages({tasks,setTasks,boards}:BoardPage) {
   }
 
   function handleSetAllStatus(status: TaskStatus) {
-    setTasks((prev) => prev.map((task) => ({ ...task, status })));
+    setTasks((prev) => prev.map((task) => task.boardId === currentBoardId ? ({ ...task, status }) : task));
   }
 
   function handleClearCompleted() {
-    setTasks((prev) => prev.filter((task) => task.status !== "done"));
+    setTasks((prev) => prev.filter((task) => !(task.boardId === currentBoardId && task.status === "done")));
   }
   const doneCount = boardTask.filter((task) => task.status === "done").length;
   const unDoneCount = boardTask.filter((task) => task.status !== "done").length;
@@ -149,6 +149,7 @@ if(!board){
   return (
     <>
       <h2>{board.title}</h2>
+      <Outlet/>
             <TaskForm onAddTask={handleCreateTask} />
       <input value={search} onChange={(e) => setSearch(e.target.value)}></input>
       <select
@@ -182,7 +183,7 @@ if(!board){
           initial="hidden"
         >
           <div>
-            Выполнено {doneCount} из {tasks.length}
+            Выполнено {doneCount} из {boardTask.length}
           </div>
           {visibleColumns.map((column) => (
             <Columnpcomponent key={column.id} column={column}>
