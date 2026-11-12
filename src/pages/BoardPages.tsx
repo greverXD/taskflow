@@ -1,5 +1,5 @@
 import TaskCard from "../components/TaskCard";
-import type { Board, Task } from "../types";
+import type { Task } from "../types";
 import type { TaskStatus } from "../types";
 import { useEffect, useState } from "react";
 import TaskForm from "../components/TaskForm";
@@ -21,11 +21,11 @@ import { useTasksFilters } from "../hooks/useTasksFilters";
 import { useKeyPress } from "../hooks/useKeyPress";
 import type { Dispatch,SetStateAction } from "react";
 import { useParams,Link, Outlet } from "react-router";
+import { useBoardStore } from "../stores/useBoardStore";
 
 interface BoardPage{
     tasks: Task[]
     setTasks: Dispatch<SetStateAction<Task[]>>
-    boards: Board[]
 }
 const appVariant: Variants = {
   hidden: {},
@@ -40,7 +40,8 @@ const COLUMNS: Column[] = [
 
 const STATUS_ORDER: TaskStatus[] = ["todo", "in-progress", "review", "done"];
 
-function BoardPages({tasks,setTasks,boards}:BoardPage) {
+function BoardPages({tasks,setTasks}:BoardPage) {
+  const boards = useBoardStore((state)=>state.boards)
   const {boardId} = useParams()
   const currentBoardId = Number(boardId) 
   const board = boards.find((b)=> b.id === currentBoardId)

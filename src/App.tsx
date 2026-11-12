@@ -1,4 +1,4 @@
-import type { Board, Task } from "./types";
+import type { Task } from "./types";
 import "./App.css";
 
 import { useLocalStorage } from "./hooks/useLocalStorage";
@@ -8,6 +8,7 @@ import AboutPage from "./pages/AboutPage";
 import Layout from "./components/Layout";
 import HomePages from "./pages/HomePages";
 import TaskDetails from "./pages/TaskDetails";
+import NotFoundPage from "./pages/NotFoundPage";
 
 
 const initialTasks: Task[] = [
@@ -37,25 +38,21 @@ const initialTasks: Task[] = [
     boardId: 1
   },
 ];
-  const initialBoards: Board[] = [
-    {
-      id:1,
-      title: "Первая доска"
-    }
-  ]
+
 function App() {
 
   const [task,setTask] = useLocalStorage("keyTask", initialTasks);
-  const [boards,setBoards] = useLocalStorage("keyBoards", initialBoards)
+  
 
   return (
     <Routes>
       <Route element= {<Layout />}>
-        <Route path="/" element={<HomePages board={boards} setBoard={setBoards}/>} ></Route>
-        <Route path = '/boards/:boardId' element ={<BoardPages boards={boards} tasks={task} setTasks={setTask}/>}> 
+        <Route path="/" element={<HomePages/>} ></Route>
+        <Route path = '/boards/:boardId' element ={<BoardPages tasks={task} setTasks={setTask}/>}> 
         <Route path="tasks/:taskId" element={<TaskDetails tasks={task} setTasks={setTask}/>}></Route>
         </Route>
         <Route path="/about" element ={<AboutPage />}> </Route>
+        <Route path="*" element={<NotFoundPage/>}></Route>
       </Route>
     </Routes>
   );

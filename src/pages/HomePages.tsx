@@ -1,30 +1,25 @@
-import { useState, type Dispatch, type SetStateAction,type SubmitEvent } from "react"
+import { useState,type SubmitEvent } from "react"
 import { Link } from "react-router"
-import type { Board } from "../types"
+
+import { useBoardStore } from "../stores/useBoardStore"
 
 
-interface HomePagesProps{
-    board: Board[]
-    setBoard: Dispatch<SetStateAction<Board[]>>
-}
 
 
-function HomePages({board,setBoard}:HomePagesProps){
+function HomePages(){
+    const boards = useBoardStore ((state)=> state.boards)
+    const addBoard = useBoardStore ((state)=> state.addBoard)
     const [title,setTitle] = useState("")
     function handleCreateBoard(e: SubmitEvent<HTMLFormElement>){
         e.preventDefault()
-        setBoard((prev)=>{
-        const newId = prev.length > 0 ? Math.max(...prev.map((b)=> b.id)) + 1 : 1
-        const newBoard : Board = {id: newId,title: title}
-        return [...prev, newBoard]
-        }
-    )
+
+    addBoard(title)
     setTitle("")
     } 
     return(
         <div><h2>Мои доски</h2>
         <ul>
-            {board.map((board)=>(
+            {boards.map((board)=>(
                 <li key={board.id}>
                     <Link to={`/boards/${board.id}`}>{board.title}</Link>
                 </li>

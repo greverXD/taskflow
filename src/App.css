@@ -264,3 +264,12 @@
   border-radius: 8px;
   z-index: 5;
 }
+nav {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+nav .active {
+  font-weight: bold;
+}
