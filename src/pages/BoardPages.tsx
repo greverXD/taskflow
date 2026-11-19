@@ -19,14 +19,12 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import type { TaskPriority, SortBy } from "../types";
 import { useTasksFilters } from "../hooks/useTasksFilters";
 import { useKeyPress } from "../hooks/useKeyPress";
-import type { Dispatch,SetStateAction } from "react";
+
 import { useParams,Link, Outlet } from "react-router";
 import { useBoardStore } from "../stores/useBoardStore";
+import { useTaskStore } from "../stores/useTaskStore";
 
-interface BoardPage{
-    tasks: Task[]
-    setTasks: Dispatch<SetStateAction<Task[]>>
-}
+
 const appVariant: Variants = {
   hidden: {},
   visible: { transition: { delayChildren: stagger(0.15) } },
@@ -38,9 +36,15 @@ const COLUMNS: Column[] = [
   { id: "done", title: "Done" },
 ];
 
-const STATUS_ORDER: TaskStatus[] = ["todo", "in-progress", "review", "done"];
 
-function BoardPages({tasks,setTasks}:BoardPage) {
+function BoardPages() {
+  const tasks = useTaskStore((state)=> state.tasks)
+  const addTask = useTaskStore((state)=> state.addTask)
+  const deleteTask = useTaskStore((state)=>state.deleteTask)
+  const changeStatus = useTaskStore((state)=> state.changeStatus)
+  const moveStatus = useTaskStore((state)=> state.moveStatus)
+  const setAllStatus = useTaskStore((state)=> state.setAllStatus)
+  const clearCompleted = useTaskStore((state)=> state.clearCompleted)
   const boards = useBoardStore((state)=>state.boards)
   const {boardId} = useParams()
   const currentBoardId = Number(boardId) 
@@ -64,7 +68,7 @@ function BoardPages({tasks,setTasks}:BoardPage) {
     setTaskToDelete(tasks.find((task) => task.id === id));
   }
   function confirmModal(id: number) {
-    handleDelete(id);
+    deleteTask(id);
     setTaskToDelete(undefined);
   }
   function cancelModal() {
@@ -78,11 +82,7 @@ function BoardPages({tasks,setTasks}:BoardPage) {
     const taskId = active.id as number;
     const newStatus = over.id as TaskStatus;
 
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId ? { ...task, status: newStatus } : task,
-      ),
-    );
+    changeStatus(taskId,newStatus)
   }
   const sensor = useSensors(
     useSensor(PointerSensor, {
@@ -92,44 +92,15 @@ function BoardPages({tasks,setTasks}:BoardPage) {
     }),
   );
 
-  function handleDelete(id: number) {
-    setTasks((prev) => prev.filter((task) => task.id !== id));
+
+
+
+
+  function handleCreateTask(values: TaskFormValues) {
+    addTask(values,currentBoardId)
   }
 
-  function handleMoveStatus(id: number, direction: 1 | -1) {
-    setTasks((prev) => {
-      return prev.map((task) => {
-        if (task.id !== id) {
-          return task;
-        }
-        const currentIndex = STATUS_ORDER.indexOf(task.status);
-        const newIndex = currentIndex + direction;
-        if (newIndex < 0 || newIndex >= STATUS_ORDER.length) {
-          return task;
-        } else {
-          const statustask = STATUS_ORDER[newIndex];
-          return { ...task, status: statustask };
-        }
-      });
-    });
-  }
 
-  function handleCreateTask(taskCreate: TaskFormValues) {
-    setTasks((prev) => {
-      const newId =
-        prev.length > 0 ? Math.max(...prev.map((task) => task.id)) + 1 : 1;
-      const newTask: Task = { ...taskCreate, id: newId, status: "todo",boardId: currentBoardId };
-      return [...prev, newTask];
-    });
-  }
-
-  function handleSetAllStatus(status: TaskStatus) {
-    setTasks((prev) => prev.map((task) => task.boardId === currentBoardId ? ({ ...task, status }) : task));
-  }
-
-  function handleClearCompleted() {
-    setTasks((prev) => prev.filter((task) => !(task.boardId === currentBoardId && task.status === "done")));
-  }
   const doneCount = boardTask.filter((task) => task.status === "done").length;
   const unDoneCount = boardTask.filter((task) => task.status !== "done").length;
 
@@ -196,7 +167,7 @@ if(!board){
                       key={task.id}
                       tasks={task}
                       onDelete={openModalDelete}
-                      handleMoveStatus={handleMoveStatus}
+                      handleMoveStatus={moveStatus}
                     />
                   ))}
               </AnimatePresence>
@@ -204,13 +175,13 @@ if(!board){
           ))}
         </motion.div>
       </DndContext>
-      <button onClick={() => handleSetAllStatus("done")}>
+      <button onClick={() => setAllStatus(currentBoardId,"done")}>
         Отметить все как выполненные
       </button>
-      <button onClick={() => handleSetAllStatus("todo")}>
+      <button onClick={() => setAllStatus(currentBoardId,"todo")}>
         Снять все отметки
       </button>
-      <button onClick={handleClearCompleted}>Очистить выполненные</button>
+      <button onClick={()=> clearCompleted(currentBoardId)}>Очистить выполненные</button>
       
 
       <AnimatePresence>

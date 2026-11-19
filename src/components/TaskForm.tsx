@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import type { TaskPriority } from '../types' 
-import { useVolume } from '../TaskContext'
+import { useThemeStore } from '../stores/useThemeStore'
 export interface TaskFormValues{
     title:string
     description:string
@@ -17,6 +17,7 @@ interface TaskProps{
     onAddTask:(form: TaskFormValues)=> void
 }
 function TaskForm({onAddTask}:TaskProps){
+    const isDark = useThemeStore((state)=> state.isDark)
     const [form,setForm] = useState<TaskFormValues>(initialForm)
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>){
@@ -32,9 +33,9 @@ function TaskForm({onAddTask}:TaskProps){
     function handleClearForm(){
         setForm(initialForm)
     }
-    const {color} = useVolume()
+
     return (
-        <form onSubmit={handleSubmit} className={color? "form_white":"form_dark"}>
+        <form onSubmit={handleSubmit} className={isDark ? "form_dark":"form_white"}>
             <input name='title' value={form.title} 
             onChange={handleChange}
             required

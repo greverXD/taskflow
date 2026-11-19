@@ -1,22 +1,15 @@
 import { useNavigate, useParams,Link } from "react-router"
-import type { Task } from "../types"
 import { useKeyPress } from "../hooks/useKeyPress"
-import type { Dispatch, SetStateAction } from "react"
+import { useTaskStore } from "../stores/useTaskStore"
 
-
-interface TaskDetailProps{
-    tasks:Task[]
-    setTasks: Dispatch<SetStateAction<Task[]>>
-}
-
-function TaskDetails({tasks,setTasks}: TaskDetailProps){
+function TaskDetails(){
+    const updateTask = useTaskStore((state)=> state.updateTask)
+    const tasks = useTaskStore((state)=>state.tasks)
     const {boardId,taskId} = useParams()
     const task = tasks.find((t)=> t.id === Number(taskId) && t.boardId === Number(boardId))
     const navigate = useNavigate()
     useKeyPress("Escape", ()=> navigate(`/boards/${boardId}`))
-    function handleChangeChange(change: Partial<Task>){
-        setTasks((prev)=> prev.map((t)=> t.id === Number(taskId) ? {...t, ...change}: t))
-    }
+
     if(!task){
         return <p>Задача не найдена</p> 
         
@@ -24,8 +17,8 @@ function TaskDetails({tasks,setTasks}: TaskDetailProps){
     }
     return(
         <div className="task-details">
-            <input value={task.title} onChange={(e) => handleChangeChange({title: e.target.value})}/>
-            <input value={task.description} onChange={(e) => handleChangeChange({description: e.target.value})}/>
+            <input value={task.title} onChange={(e) => updateTask(task.id,{title: e.target.value})}/>
+            <input value={task.description} onChange={(e) => updateTask(task.id,{description: e.target.value})}/>
             <p>Время: {task.dueDate}</p>
             <p>Приоритет: {task.priority ?? 'Не указан'}</p>
             <p>Статус: {task.status}</p>

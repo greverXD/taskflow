@@ -1,7 +1,4 @@
-import type { Task } from "./types";
 import "./App.css";
-
-import { useLocalStorage } from "./hooks/useLocalStorage";
 import { Routes, Route } from "react-router";
 import BoardPages from "./pages/BoardPages";
 import AboutPage from "./pages/AboutPage";
@@ -10,46 +7,14 @@ import HomePages from "./pages/HomePages";
 import TaskDetails from "./pages/TaskDetails";
 import NotFoundPage from "./pages/NotFoundPage";
 
-
-const initialTasks: Task[] = [
-  {
-    id: 1,
-    title: "Task 1",
-    description: "...",
-    dueDate: "2023-06-01",
-    priority: "High",
-    status: "todo",
-    boardId: 1
-  },
-  {
-    id: 2,
-    title: "Task 2",
-    description: "...",
-    dueDate: "2023-06-02",
-    status: "todo",
-    boardId: 1
-  },
-  {
-    id: 3,
-    title: "Task 3",
-    description: "...",
-    dueDate: "2023-06-03",
-    status: "todo",
-    boardId: 1
-  },
-];
-
-function App() {
-
-  const [task,setTask] = useLocalStorage("keyTask", initialTasks);
-  
+function App() {  
 
   return (
     <Routes>
       <Route element= {<Layout />}>
         <Route path="/" element={<HomePages/>} ></Route>
-        <Route path = '/boards/:boardId' element ={<BoardPages tasks={task} setTasks={setTask}/>}> 
-        <Route path="tasks/:taskId" element={<TaskDetails tasks={task} setTasks={setTask}/>}></Route>
+        <Route path = '/boards/:boardId' element ={<BoardPages/>}> 
+        <Route path="tasks/:taskId" element={<TaskDetails/>}></Route>
         </Route>
         <Route path="/about" element ={<AboutPage />}> </Route>
         <Route path="*" element={<NotFoundPage/>}></Route>

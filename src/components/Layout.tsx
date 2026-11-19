@@ -1,13 +1,15 @@
 import { NavLink,Outlet } from "react-router";
-import { useVolume } from "../TaskContext";
+import { useThemeStore } from "../stores/useThemeStore";
 
 function Layout(){
 
-    const { toggleDark, color } = useVolume();
+    // const { toggleDark, color } = useVolume();
+    const isDark = useThemeStore((state)=> state.isDark)
+    const toggleDark = useThemeStore((state)=> state.toggleTheme)
     return(
       
-    <div className={color ? "board_white" : "board_dark"}>
-      <h1 className={color ? "h_white" : "h_dark"}>TaskFlow</h1>
+    <div className={isDark ?  "board_dark": "board_white"}>
+      <h1 className={isDark ?  "h_dark": "h_white"}>TaskFlow</h1>
       <nav>
         <NavLink to="/">Мои Доски</NavLink>
         <NavLink to="/about">О проекте</NavLink>
