@@ -273,3 +273,12 @@ nav {
 nav .active {
   font-weight: bold;
 }
+.form-error {
+  color: #e5484d;
+  font-size: 0.85rem;
+  margin: 4px 0 0;
+}
+[aria-invalid="true"] {
+  outline: 2px solid #e5484d;
+  outline-offset: 1px;
+}

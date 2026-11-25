@@ -1,12 +1,10 @@
-import React, { useState } from 'react'
-import type { TaskPriority } from '../types' 
+import { zodResolver } from "@hookform/resolvers/zod"
+import type { TaskFormValues } from '../schemas/taskSchema'
 import { useThemeStore } from '../stores/useThemeStore'
-export interface TaskFormValues{
-    title:string
-    description:string
-    dueDate:string
-    priority:TaskPriority
-}
+import { taskSchema } from "../schemas/taskSchema"
+import { useForm } from "react-hook-form"
+import { PRIORITY } from "../types"
+
 const initialForm: TaskFormValues = {
     title:'',
     description:'',
@@ -17,39 +15,35 @@ interface TaskProps{
     onAddTask:(form: TaskFormValues)=> void
 }
 function TaskForm({onAddTask}:TaskProps){
+    "use no memo"
     const isDark = useThemeStore((state)=> state.isDark)
-    const [form,setForm] = useState<TaskFormValues>(initialForm)
-
-    function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>){
-        const {name, value} = e.target;
-        setForm((prev)=>({...prev,[name]: value}))
-    }
-    function handleSubmit(e: React.FormEvent<HTMLFormElement>){
-        e.preventDefault()
-        onAddTask(form)
-        setForm(initialForm)
-    }
-
-    function handleClearForm(){
-        setForm(initialForm)
+   const{  register,reset,handleSubmit, formState: {errors}} = useForm<TaskFormValues>({
+        resolver: zodResolver(taskSchema),
+        defaultValues: initialForm,
+        mode: "onTouched"
+    })
+    function onValid(data:TaskFormValues){
+        onAddTask(data)
+        reset()
     }
 
     return (
-        <form onSubmit={handleSubmit} className={isDark ? "form_dark":"form_white"}>
-            <input name='title' value={form.title} 
-            onChange={handleChange}
-            required
-            />
-            <textarea name='description' value={form.description} onChange={handleChange}></textarea>
-            <input type='date' name='dueDate' value={form.dueDate} onChange={handleChange} required/>
-            <select name='priority'  value={form.priority} onChange={handleChange}>
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
+        <form onSubmit={handleSubmit(onValid)} className={isDark ? "form_dark":"form_white"}>
+            <input {...register('title')} aria-invalid={errors.title ? true : false}/>
+            {errors.title &&<p className="form-error">{errors.title.message}</p>}
+            
+            <textarea {...register('description')} aria-invalid={errors.description ? true : false}></textarea>
+            {errors.description &&<p className="form-error">{errors.description.message}</p>}
+            <input type='date' {...register('dueDate')} aria-invalid={errors.dueDate ? true : false}/>
+            {errors.dueDate &&<p className="form-error">{errors.dueDate.message}</p>}
+            <select {...register('priority')}>
+               {PRIORITY.map((p)=>(
+                <option key={p} value={p}>{p}</option>
+               ))}
             </select>
-            {form.title}
+            
             <button type='submit'>Добавить</button>
-            <button type='button' onClick={handleClearForm}>Очистить форму</button>
+            <button type='button' onClick={()=> reset()}>Очистить форму</button>
         </form>
     )
 }

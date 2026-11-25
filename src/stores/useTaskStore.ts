@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { TaskFormValues } from "../components/TaskForm";
+import type { TaskFormValues } from "../schemas/taskSchema";
 import { persist } from "zustand/middleware";
 import type { Task,TaskStatus } from "../types";
 

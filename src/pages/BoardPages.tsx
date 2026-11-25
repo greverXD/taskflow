@@ -3,7 +3,7 @@ import type { Task } from "../types";
 import type { TaskStatus } from "../types";
 import { useEffect, useState } from "react";
 import TaskForm from "../components/TaskForm";
-import type { TaskFormValues } from "../components/TaskForm";
+import type { TaskFormValues } from "../schemas/taskSchema";
 import type { Column } from "../types";
 import Columnpcomponent from "../components/Column";
 import {
@@ -23,7 +23,7 @@ import { useKeyPress } from "../hooks/useKeyPress";
 import { useParams,Link, Outlet } from "react-router";
 import { useBoardStore } from "../stores/useBoardStore";
 import { useTaskStore } from "../stores/useTaskStore";
-
+import { PRIORITY } from "../types"
 
 const appVariant: Variants = {
   hidden: {},
@@ -131,9 +131,9 @@ if(!board){
         }
       >
         <option value="all">All</option>
-        <option value="Low">Low</option>
-        <option value="Medium">Medium</option>
-        <option value="High">High</option>
+                {PRIORITY.map((p)=>(
+                <option key={p} value={p}>{p}</option>
+               ))}
       </select>
       <select
         value={sortBy}

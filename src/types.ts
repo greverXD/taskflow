@@ -1,5 +1,6 @@
 export type TaskStatus = 'todo' | 'in-progress' | 'review' | 'done'
-export type TaskPriority = 'Low' | 'Medium' | 'High'
+export const PRIORITY = ["Low", "Medium", "High"] as const
+export type TaskPriority = (typeof PRIORITY)[number]
 export type SortBy = "none" | "dueDate" | "priority"
 export interface Task {
   id: number
