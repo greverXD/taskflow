@@ -19,12 +19,13 @@ function HomePages(){
     }) 
 
     function onValid(data: BoardFormValues){
-        addBoard(data.title)
-        const exist = boards.some((b)=> b.title.toLowerCase() === data.title)
+        
+        const exist = boards.some((b)=> b.title.toLowerCase() === data.title.toLowerCase())
         if(exist){
             setError("title",{message:"Доска с таким именем есть"})
             return
         }
+        addBoard(data.title)
         reset()
     }
     return(
